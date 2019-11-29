@@ -19,8 +19,6 @@ public class NginxCdkTest {
         App app = new App();
         NginxCdkStack stack = new NginxCdkStack(app, "test");
 
-        // synthesize the stack to a CloudFormation template and compare against
-        // a checked-in JSON file.
         JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
         assertEquals(new ObjectMapper().createObjectNode(), actual);
     }
