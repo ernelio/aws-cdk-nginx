@@ -24,12 +24,12 @@ public class NginxCdkStack extends Stack {
 	public NginxCdkStack(final Construct scope, final String id, final StackProps props) {
 		super(scope, id, props);
 
-		Vpc vpc = Vpc.Builder.create(this, "VPC-nginx").enableDnsHostnames(true).enableDnsSupport(true).build();
-
+		Vpc vpc = Vpc.Builder.create(this, "VPC-nginx").enableDnsHostnames(true).enableDnsSupport(true).cidr("172.31.235.0/24").build();
+		
 		MyAutoScalingGroupProps autoScalingGroupProps = new MyAutoScalingGroupProps();
 		autoScalingGroupProps.vpc = vpc;
 		
-		new Asg(this, "MyAutoScalingroup", autoScalingGroupProps);
+		new MyAutoScalingroup(this, "MyAutoScalingroup", autoScalingGroupProps);
 
 	}
 
@@ -37,17 +37,14 @@ public class NginxCdkStack extends Stack {
 		public Vpc vpc;
 	}
 
-	static class Asg extends Construct {
-		Asg(final Construct parent, final String name, final MyAutoScalingGroupProps props) {
+	static class MyAutoScalingroup extends Construct {
+		MyAutoScalingroup(final Construct parent, final String name, final MyAutoScalingGroupProps props) {
 			super(parent, name);
 			
 			UserData userData = UserData.forLinux();
 			userData.addCommands("yum install -y nginx","echo \"Test Ngnix!\" >> /var/www/html/index.html", "chkconfig nginx on", "service nginx start");
-
-//			SecurityGroup sg = SecurityGroup.Builder.create(this, "SG-NGINX").vpc(props.vpc).securityGroupName("Ec2SG").build();
+			
 			Connections.Builder.create().defaultPort(Port.tcp(80));
-//			SubnetSelection vpcSubnets = Subnet.Builder.create(this, "subnet-public").;
-//			SubnetSelection vpcSubnets = SubnetSelection.builder().subnetType(SubnetType.PUBLIC);
 			SubnetSelection.builder().subnetType(SubnetType.PUBLIC);
 			AutoScalingGroup.Builder.create(this, "Nginx").instanceType(new InstanceType("t2.micro")).keyName("aws-cdk").allowAllOutbound(false)
 					.machineImage(new AmazonLinuxImage()).associatePublicIpAddress(false).userData(userData).vpc(props.vpc).build();

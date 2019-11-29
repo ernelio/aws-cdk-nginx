@@ -1,6 +1,6 @@
-# Welcome to your CDK Java project!
+# AWS CDK Nginx Java project!
 
-This is a blank project for Java development with CDK.
+This is project for Java development with CDK installing Nginx.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
